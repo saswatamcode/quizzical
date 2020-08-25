@@ -8,7 +8,7 @@ const theme = {
   ...chakraTheme,
   colors: {
     ...chakraTheme.colors,
-    black: '#16161D',
+    black: '#fff',
   },
   fonts,
   breakpoints,
@@ -35,4 +35,4 @@ const theme = {
   },
 }
 
-export default theme
+export default theme;
