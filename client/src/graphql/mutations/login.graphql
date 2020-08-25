@@ -1,0 +1,14 @@
+mutation Login($options: UsernamePasswordInput!) {
+  login(options: $options) {
+    user {
+      id
+      createdAt
+      username
+      updatedAt
+    }
+    errors {
+      field
+      message
+    }
+  }
+}
