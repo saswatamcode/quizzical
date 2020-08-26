@@ -33,7 +33,7 @@ const main = () => __awaiter(void 0, void 0, void 0, function* () {
     const redisClient = redis_1.default.createClient();
     app.use(cors_1.default({ origin: "http://localhost:3000", credentials: true }));
     app.use(express_session_1.default({
-        name: "qid",
+        name: constants_1.COOKIE_NAME,
         store: new RedisStore({
             client: redisClient,
             disableTouch: true,

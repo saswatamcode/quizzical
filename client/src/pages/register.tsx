@@ -3,7 +3,7 @@ import { Formik, Form } from "formik";
 import { Box, Button } from "@chakra-ui/core";
 import { Wrapper } from "../components/Wrapper";
 import { InputField } from "../components/InputField";
-import { useRegisterMutation } from "../generated/graphql";
+import { useRegisterMutation, MeDocument, MeQuery } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
 import { useRouter } from "next/router";
 
@@ -19,6 +19,18 @@ const Register: React.FC<registerProps> = ({}) => {
         onSubmit={async (values, { setErrors }) => {
           const response = await register({
             variables: { username: values.username, password: values.password },
+            update: (store, { data }) => {
+              if (data!.register.errors) {
+                return;
+              } else {
+                store.writeQuery<MeQuery>({
+                  query: MeDocument,
+                  data: {
+                    me: data!.register.user,
+                  },
+                });
+              }
+            },
           });
           if (response.data?.register.errors) {
             setErrors(toErrorMap(response.data.register.errors));
