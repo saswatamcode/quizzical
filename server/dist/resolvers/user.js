@@ -72,7 +72,8 @@ let UserResolver = class UserResolver {
                     ],
                 };
             }
-            const userId = yield redis.get(constants_1.FORGET_PASSWORD_PREFIX + token);
+            const key = constants_1.FORGET_PASSWORD_PREFIX + token;
+            const userId = yield redis.get(key);
             if (!userId) {
                 return {
                     errors: [
@@ -96,6 +97,7 @@ let UserResolver = class UserResolver {
             }
             user.password = yield argon2_1.default.hash(newPassword);
             yield em.persistAndFlush(user);
+            yield redis.del(key);
             req.session.userId = user.id;
             return { user };
         });
@@ -108,7 +110,7 @@ let UserResolver = class UserResolver {
             }
             const token = uuid_1.v4();
             yield redis.set(constants_1.FORGET_PASSWORD_PREFIX + token, user.id, "ex", 1000 * 60 * 60 * 24 * 3);
-            yield sendEmail_1.default(email, `<a href="http://localhost:3000/change-password/${token}>reset password</a>`);
+            yield sendEmail_1.default(email, `<a href="http://localhost:3000/change-password/${token}">reset password</a>`);
             return true;
         });
     }

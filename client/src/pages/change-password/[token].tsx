@@ -1,17 +1,22 @@
 import React, { useState } from "react";
 import { NextPage } from "next";
 import { Formik, Form } from "formik";
-import { Box, Button } from "@chakra-ui/core";
+import { Box, Button, Link, Flex } from "@chakra-ui/core";
 import { Wrapper } from "../../components/Wrapper";
 import { InputField } from "../../components/InputField";
-import { useChangePasswordMutation } from "../../generated/graphql";
+import {
+  useChangePasswordMutation,
+  MeDocument,
+  MeQuery,
+} from "../../generated/graphql";
 import { toErrorMap } from "../../utils/toErrorMap";
 import { withApollo } from "../../utils/withApollo";
 import { useRouter } from "next/router";
+import NextLink from "next/link";
 
 const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
   const [changePassword] = useChangePasswordMutation();
-  const [tokenError, setTokenError] = useState();
+  const [tokenError, setTokenError] = useState<string>();
   const router = useRouter();
 
   return (
@@ -22,6 +27,18 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
           onSubmit={async (values, { setErrors }) => {
             const response = await changePassword({
               variables: { token, newPassword: values.newPassword },
+              update: (store, { data }) => {
+                if (data!.changePassword.errors) {
+                  return;
+                } else {
+                  store.writeQuery<MeQuery>({
+                    query: MeDocument,
+                    data: {
+                      me: data!.changePassword.user,
+                    },
+                  });
+                }
+              },
             });
             if (response.data?.changePassword.errors) {
               const errorMap = toErrorMap(response.data.changePassword.errors);
@@ -42,7 +59,16 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
                 label="New Password"
                 type="password"
               />
-              {tokenError ? <Box color="red">{tokenError}</Box> : null}
+              {tokenError ? (
+                <Flex>
+                  <Box mr={2} style={{ color: "red" }}>
+                    {tokenError}
+                  </Box>
+                  <NextLink href="/forgot-password">
+                    <Link>click here to get a new one</Link>
+                  </NextLink>
+                </Flex>
+              ) : null}
               <Button
                 mt={4}
                 type="submit"
@@ -65,4 +91,4 @@ ChangePassword.getInitialProps = ({ query }) => {
   };
 };
 
-export default withApollo({ssr: false})(ChangePassword);
+export default withApollo({ ssr: false })(ChangePassword);
