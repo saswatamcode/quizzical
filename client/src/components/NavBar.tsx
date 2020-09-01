@@ -6,11 +6,14 @@ import {
   MeDocument,
   MeQuery,
 } from "../generated/graphql";
+import { isServer } from "../utils/isServer";
 
 interface NavBarProps {}
 
 export const NavBar: React.FC<NavBarProps> = () => {
-  const { loading, error, data } = useMeQuery();
+  const { loading, error, data } = useMeQuery({
+    skip: isServer(),
+  });
   const [logout, { loading: logoutfetching }] = useLogoutMutation();
 
   let body = null;

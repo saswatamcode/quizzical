@@ -16,10 +16,10 @@ const Login: React.FC<loginProps> = ({}) => {
   return (
     <Wrapper variant="small">
       <Formik
-        initialValues={{ username: "", password: "" }}
+        initialValues={{ usernameOrEmail: "", password: "" }}
         onSubmit={async (values, { setErrors }) => {
           const response = await login({
-            variables: { options: values },
+            variables: values,
             //refetchQueries: [{ query: MeDocument }],
             update: (store, { data }) => {
               if (data!.login.errors) {
@@ -45,9 +45,9 @@ const Login: React.FC<loginProps> = ({}) => {
         {({ isSubmitting }) => (
           <Form>
             <InputField
-              name="username"
-              placeholder="username"
-              label="Username"
+              name="usernameOrEmail"
+              placeholder="username or email"
+              label="Username Or Email"
             />
             <Box mt={4}>
               <InputField
@@ -72,4 +72,4 @@ const Login: React.FC<loginProps> = ({}) => {
   );
 };
 
-export default withApollo({ssr: false})(Login);
+export default withApollo({ ssr: false })(Login);
