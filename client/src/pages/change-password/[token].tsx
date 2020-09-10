@@ -14,7 +14,7 @@ import { withApollo } from "../../utils/withApollo";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
 
-const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
+const ChangePassword: NextPage = () => {
   const [changePassword] = useChangePasswordMutation();
   const [tokenError, setTokenError] = useState<string>();
   const router = useRouter();
@@ -26,7 +26,13 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
           initialValues={{ newPassword: "" }}
           onSubmit={async (values, { setErrors }) => {
             const response = await changePassword({
-              variables: { token, newPassword: values.newPassword },
+              variables: {
+                token:
+                  typeof router.query.token === "string"
+                    ? router.query.token
+                    : "",
+                newPassword: values.newPassword,
+              },
               update: (store, { data }) => {
                 if (data!.changePassword.errors) {
                   return;
@@ -83,12 +89,6 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
       </Wrapper>
     </>
   );
-};
-
-ChangePassword.getInitialProps = ({ query }) => {
-  return {
-    token: query.token as string,
-  };
 };
 
 export default withApollo({ ssr: false })(ChangePassword);

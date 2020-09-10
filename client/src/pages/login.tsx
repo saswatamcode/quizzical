@@ -8,6 +8,7 @@ import { toErrorMap } from "../utils/toErrorMap";
 import { withApollo } from "../utils/withApollo";
 import { useRouter } from "next/router";
 import NextLink from "next/link";
+import { route } from "next/dist/next-server/server/router";
 
 interface loginProps {}
 
@@ -38,7 +39,11 @@ const Login: React.FC<loginProps> = ({}) => {
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
-            router.push("/");
+            if (typeof router.query.next === "string") {
+              router.push(router.query.next);
+            } else {
+              router.push("/");
+            }
           }
         }}
       >
