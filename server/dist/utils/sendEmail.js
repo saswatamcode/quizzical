@@ -19,8 +19,8 @@ const sendEmail = (to, html) => __awaiter(void 0, void 0, void 0, function* () {
         port: 587,
         secure: false,
         auth: {
-            user: 'gevvn5lrrhmug5va@ethereal.email',
-            pass: 'jxvVhv6MHE19zmEu6W',
+            user: "gevvn5lrrhmug5va@ethereal.email",
+            pass: "jxvVhv6MHE19zmEu6W",
         },
     });
     let info = yield transporter.sendMail({

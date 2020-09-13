@@ -9,8 +9,8 @@ const sendEmail = async (to: string, html: string) => {
     port: 587,
     secure: false, // true for 465, false for other ports
     auth: {
-      user: 'gevvn5lrrhmug5va@ethereal.email', // generated ethereal user
-      pass: 'jxvVhv6MHE19zmEu6W', // generated ethereal password
+      user: "gevvn5lrrhmug5va@ethereal.email", // generated ethereal user
+      pass: "jxvVhv6MHE19zmEu6W", // generated ethereal password
     },
   });
 
@@ -25,6 +25,6 @@ const sendEmail = async (to: string, html: string) => {
   console.log("Message sent: %s", info.messageId);
 
   console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-}
+};
 
 export default sendEmail;
