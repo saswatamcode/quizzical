@@ -1,12 +1,13 @@
-import { usePostsQuery } from "../generated/graphql";
+import { usePostsQuery, PostsQuery } from "../generated/graphql";
 import { withApollo } from "../utils/withApollo";
 import { Layout } from "../components/Layout";
 import { Box, Flex, Heading, Link, Stack, Text, Button } from "@chakra-ui/core";
 import NextLink from "next/link";
 
 const Index = () => {
-  const { data, loading } = usePostsQuery({
-    variables: { limit: 10 },
+  const { data, loading, fetchMore, variables } = usePostsQuery({
+    variables: { limit: 10, cursor: null },
+    notifyOnNetworkStatusChange: true,
   });
 
   if (!loading && !data) {
@@ -36,7 +37,35 @@ const Index = () => {
       </Stack>
       {data ? (
         <Flex>
-          <Button isLoading={loading} m={4} my={8}>
+          <Button
+            isLoading={loading}
+            m={4}
+            my={8}
+            onClick={() => {
+              fetchMore({
+                variables: {
+                  limit: variables?.limit,
+                  cursor: data.posts[data.posts.length - 1].createdAt,
+                },
+                updateQuery: (
+                  previousValue,
+                  { fetchMoreResult }
+                ): PostsQuery => {
+                  if (!fetchMoreResult) {
+                    return previousValue as PostsQuery;
+                  }
+
+                  return {
+                    __typename: "Query",
+                    posts: [
+                      ...(previousValue as PostsQuery).posts,
+                      ...(fetchMoreResult as PostsQuery).posts,
+                    ],
+                  };
+                },
+              });
+            }}
+          >
             load more
           </Button>
         </Flex>
